@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
 
+from tempfile import NamedTemporaryFile
+
 from PIL import Image
+from reportlab.lib.pagesizes import A2
+from reportlab.lib.pagesizes import landscape
+from reportlab.platypus import SimpleDocTemplate
+from reportlab.platypus import Image as PDFImage
 
 
 def merge(image_paths):
@@ -21,4 +27,8 @@ if __name__ == '__main__':
         '4-birds.png',
         '5-copyright.png']
     merged = merge(images)
-    merged.show()
+    doc = SimpleDocTemplate('landscape.pdf', pagesize=landscape(A2))
+    with NamedTemporaryFile(suffix='.png') as f:
+        merged.save(f.name)
+        image = PDFImage(f.name, 1024, 768)
+        doc.build([image])
